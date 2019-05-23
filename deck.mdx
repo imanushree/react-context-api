@@ -201,7 +201,7 @@ function ThemeButton() {
 
 ---
 
-Example:
+### EXAMPLE:
 
 theme-context.js
 
@@ -217,13 +217,8 @@ export const ThemeContext = React.createContext({
 app.js
 
 ```jsx
-import React from 'react';
-import { ThemeContext } from './theme-context.js';
-import { themes } from './themes.js';
-
 class App extends React.Component {
   toggleTheme = () => { ... }
-
   render() {
     const value = React.useMemo(() => {
     return {
@@ -268,7 +263,7 @@ function ThemeButton() {
   const context = React.useContext(ThemeContext);
   const { theme, toggleTheme } = context;
   return (
-    <button onClick={toggleTheme} style={{ backgroundColor: theme.background }}>
+    <button onClick={toggleTheme} style={{ bgColor: theme.bg }}>
       Toggle Theme
     </button>
   );
@@ -299,9 +294,9 @@ Note: Everytime Provider re-renders, all of its Consumers re-render as well.
 
 ---
 
-## Does Context replace redux: The burning question
+### Does Context replace redux: The burning question :fire:
 
-Self introspection time:
+Self introspection time
 
 Why do I use redux in my app?
 
@@ -317,8 +312,9 @@ Why do I use redux in my app?
 
 ---
 
-If your answer was connect(), then yes Context replaces Redux.
-But if you need any of the other Redux features, then NO
+If your answer was connect(), then yes Context replaces Redux :thumbsup:
+
+But if you need and use any of the other Redux features, then NOOO !
 
 https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
 
@@ -326,27 +322,27 @@ https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
 
 ---
 
-Summary:
+Summary :rocket:
 
-- Our job doesn't end with just picking the right library/framework
+- Our job as developers doesn't end with just picking the right library/framework
 - Every decision like which API to use, which pattern to follow etc adds up
 - They determine our app's performance, code quality, maintainability etc
-- So choose between Composition/ Context / Redux wisely :thumps_up:
+- So choose between Composition/ Context / Redux wisely :thumbsup:
 
 ---
 
-### Thank you :smiling:
+## Thank you !
 
-### @imAnushree
+#### @imAnushree
 
 ---
 
 #### References
 
-https://reactjs.org/docs/context.html
-https://www.youtube.com/watch?v=PaE-TfTY8TY
-https://medium.com/@ryanflorence/react-context-and-re-renders-react-take-the-wheel-cd1d20663647
-https://kentcdodds.com/blog/prop-drilling
-https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
-https://kentcdodds.com/blog/how-to-use-react-context-effectively
-https://kentcdodds.com/blog/how-to-optimize-your-context-value
+- https://reactjs.org/docs/context.html
+- https://www.youtube.com/watch?v=PaE-TfTY8TY
+- https://medium.com/@ryanflorence/react-context-and-re-renders-react-take-the-wheel-cd1d20663647
+- https://kentcdodds.com/blog/prop-drilling
+- https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
+- https://kentcdodds.com/blog/how-to-use-react-context-effectively
+- https://kentcdodds.com/blog/how-to-optimize-your-context-value
