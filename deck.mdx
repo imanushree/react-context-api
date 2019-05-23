@@ -50,11 +50,11 @@ Commonly referred as "Prop drilling"
 
 ---
 
-## Solution ? :thinking:
+## Solution ? :rocket:
 
 ---
 
-## Component composition to the rescue !
+## Component composition to the rescue ! :rocket:
 
 <Notes> (if you all thought i was gonna say context, hold your horses) </Notes>
 
@@ -72,7 +72,6 @@ function Page(props) {
   );
   return <PageLayout userLink={userLink} />;
 }
-// Now we have
 <Page user={user} avatarSize={avatarSize} />
 // ... which renders ...
 <PageLayout userLink={...} />
@@ -91,7 +90,7 @@ function Page(props) {
 
 ---
 
-# Multiple Children - Slots
+## Multiple Children - Slots
 
 ```jsx
 function Page(props) {
@@ -110,9 +109,7 @@ function Page(props) {
 
 ---
 
-At this point you must be thinking "umm.. I was told this is a talk on react
-Context" :)
-Some cute emoji
+Hang on..umm.. I was told this is a talk on React Context :confused:
 
 <Notes>
   Well, We may have solved the prop drilling problem for this particular
@@ -122,7 +119,7 @@ Some cute emoji
 
 ---
 
-Context API
+## Context API :fire:
 
 <Notes>What is Context API?</Notes>
 
@@ -154,7 +151,7 @@ Legacy API  ->  New stable API(16.3) -> React 16.6  -> Hooks(16.8)
 
 ---
 
-# Syntax of Context API
+## Syntax of Context API
 
 createContext
 
@@ -168,10 +165,15 @@ Provider
 <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 ```
 
+---
+
 Consumer
+
 contextType(class component)
 
 ```jsx
+import { ThemeContext } from './theme-context.js';
+
 class Layout extends React.Component {
   static contextType = ThemeContext;
   render() {
@@ -181,15 +183,23 @@ class Layout extends React.Component {
 }
 ```
 
+---
+
+Consumer
+
 useContext(functional component)
 
 ```jsx
+import { ThemeContext } from './theme-context.js';
+
 function ThemeButton() {
   const context = React.useContext(ThemeContext);
   const { theme, toggleTheme } = context;
   return (...);
 }
 ```
+
+---
 
 Example:
 
@@ -201,6 +211,8 @@ export const ThemeContext = React.createContext({
   toggleTheme: () => {}
 });
 ```
+
+---
 
 app.js
 
@@ -230,6 +242,8 @@ class App extends React.Component {
 }
 ```
 
+---
+
 content.js
 
 ```jsx
@@ -241,6 +255,8 @@ function Content() {
   )
 }
 ```
+
+---
 
 theme-button.js
 
@@ -261,6 +277,10 @@ function ThemeButton() {
 
 ---
 
+### Deep Prop drilling problem solved by Context ! Yaayyy! :tada:
+
+---
+
 ## Caveat - Performance Issue with value
 
 ```jsx
@@ -269,62 +289,64 @@ function ThemeButton() {
 </Context.Provider>
 ```
 
+Note: Everytime Provider re-renders, all of its Consumers re-render as well.
+
 <Notes>Unnecessary rerender </Notes>
 
 ---
 
-Prop drilling problem solved by Context ! Yaayyy! :tada:
+### Pick the right approach: Composition or Context :key:
 
 ---
 
 ## Does Context replace redux: The burning question
 
 Self introspection time:
+
 Why do I use redux in my app?
-ReactRedux has connect() -> solves prop drilling
-time-travel debugging
-Middleware
-For Redux Devtools
-List goes on
 
 ---
 
-If your answer was connect(), then absolutely Context replaces redux.
-But if you want any of the other features, then no
-Refer Mark Erikson's blog for details
+### Redux provides
+
+- time-travel debugging
+- Middleware
+- Devtools
+- ReactRedux has connect() -> solves prop drilling
+- List goes on ..
+
+---
+
+If your answer was connect(), then yes Context replaces Redux.
+But if you need any of the other Redux features, then NO
+
+https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
+
+<Notes> Refer Mark Erikson's blog for details </Notes>
 
 ---
 
 Summary:
-When to reach for what solution: Composition vs Context
-Weigh the pros and cons for everything - not just while selecting libraries/tools. We need to make decisions about patterns and APIs as well and choose the best fit
-Choosing a library or framework is just one part of the process
-Ultimately your app performance, code quality, maintainability etc will depend on the coding standards, patterns and API you decide to use along the way
-Cliche Toolkit example - pick the right one for the job
-How to decide what is right tool?
-Discovery
-Interact with other developers in the community(twitter, reddit etc)
-Read OSS code
-Do a POC, ask for feedback from your team and the community
-Development
-Write tests, run benchmarks and write refactorable flexible code wherever possible
+
+- Our job doesn't end with just picking the right library/framework
+- Every decision like which API to use, which pattern to follow etc adds up
+- They determine our app's performance, code quality, maintainability etc
+- So choose between Composition/ Context / Redux wisely :thumps_up:
 
 ---
 
-Thank you
-@imAnushree
+### Thank you :smiling:
 
-TODO:
-Feedback Link
-Footer in all slides with ref links
-JSMonthly May 2019 @imAnushree
-Add more ref links
+### @imAnushree
 
 ---
 
-References
+#### References
 
+https://reactjs.org/docs/context.html
 https://www.youtube.com/watch?v=PaE-TfTY8TY
+https://medium.com/@ryanflorence/react-context-and-re-renders-react-take-the-wheel-cd1d20663647
 https://kentcdodds.com/blog/prop-drilling
-
 https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
+https://kentcdodds.com/blog/how-to-use-react-context-effectively
+https://kentcdodds.com/blog/how-to-optimize-your-context-value
