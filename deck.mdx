@@ -129,9 +129,9 @@ Hang on..umm.. I was told this is a talk on React Context :confused:
 
 <blockquote>
   Context provides a way to pass "global" data down a component subtree without
-  (explicitly)passing props down 
+  (explicitly)passing props down at every level
 </blockquote>
-Ex: currentUser, theme, locale etc
+Global data: currentUser, theme, locale etc
 
 <Notes>
   Values like currentUser, theme, locale etc are required by multiple components
@@ -201,15 +201,44 @@ function ThemeButton() {
 
 ---
 
-### EXAMPLE:
+## Caveat - Performance Issue with value
+
+```jsx
+<Context.Provider value={{ something: 'something', nothing: 'nothing' }}>
+  <Toolbar />
+</Context.Provider>
+```
+
+Note: Everytime Provider re-renders, all of its Consumers re-render as well.
+
+<Notes>Unnecessary rerender </Notes>
+
+---
+
+### Solution 1: Pass state object instead
+
+```jsx
+state = {
+   something: 'something', nothing: 'nothing'
+}
+
+<Context.Provider value={this.state}>
+  <Toolbar />
+</Context.Provider>
+```
+
+### Solution 2: useMemo() Hook
+
+We'll see in next example
+
+---
+
+### EXAMPLE OF CONTEXT WITH HOOKS:
 
 theme-context.js
 
 ```jsx
-export const ThemeContext = React.createContext({
-  theme: themes.dark,
-  toggleTheme: () => {}
-});
+export const ThemeContext = React.createContext();
 ```
 
 ---
@@ -217,24 +246,34 @@ export const ThemeContext = React.createContext({
 app.js
 
 ```jsx
-class App extends React.Component {
-  toggleTheme = () => { ... }
+function App() {
   render() {
-    const value = React.useMemo(() => {
-    return {
-      theme: themes.light,
-      toggleTheme: this.toggleTheme
-    }
-  }, [theme])
     return (
-      <ThemeContext.Provider
-        value={value}
-      >
+      <ThemeProvider>
         <Content />
-      </ThemeContext.Provider>
+      </ThemeProvider>
     );
   }
 }
+```
+
+---
+
+theme-provider.js
+
+```jsx
+function ThemeProvider(props) {
+  const [theme, toggleTheme] = React.useState('dark');
+  const value = React.useMemo(() => {
+    return {
+      theme,
+      toggleTheme
+    };
+  }, [theme]);
+
+  return <ThemeContext.Provider value={value} {...props} />;
+}
+export { ThemeProvider };
 ```
 
 ---
@@ -258,12 +297,16 @@ theme-button.js
 ```jsx
 import React from 'react';
 import { ThemeContext } from './theme-context.js';
+import { themes } from './themes';
 
 function ThemeButton() {
   const context = React.useContext(ThemeContext);
   const { theme, toggleTheme } = context;
   return (
-    <button onClick={toggleTheme} style={{ bgColor: theme.bg }}>
+    <button
+      onClick={() => toggleTheme('light')}
+      style={{ bgColor: themes[theme].bg }}
+    >
       Toggle Theme
     </button>
   );
@@ -273,20 +316,6 @@ function ThemeButton() {
 ---
 
 ### Deep Prop drilling problem solved by Context ! Yaayyy! :tada:
-
----
-
-## Caveat - Performance Issue with value
-
-```jsx
-<Context.Provider value={{ something: 'something' }}>
-  <Toolbar />
-</Context.Provider>
-```
-
-Note: Everytime Provider re-renders, all of its Consumers re-render as well.
-
-<Notes>Unnecessary rerender </Notes>
 
 ---
 
