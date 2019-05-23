@@ -1,3 +1,5 @@
+import { Notes } from 'mdx-deck';
+
 # Let's get some Context
 
 Anushree Subramani
@@ -8,16 +10,255 @@ JSMonthly May 2019 @imAnushree
 
 ---
 
-# icebreaker
-
----
-
-# jk
-
----
-
-import { Notes } from 'mdx-deck';
 # Intro slide - just emojis explain in person
-# Slide Content
-<Notes>You are going to rock this!</Notes>
+
+<Notes>Alright, thats enough about me. Now, lets get this party started</Notes>
+
 ---
+
+Consider this:
+
+```jsx
+<Page user={user} avatarSize={avatarSize} />
+// ... which renders ...
+<PageLayout user={user} avatarSize={avatarSize} />
+// ... which renders ...
+<NavigationBar user={user} avatarSize={avatarSize} />
+// ... which renders ...
+<Link href={user.permalink}>
+  <Avatar user={user} size={avatarSize} />
+</Link>
+```
+
+<Notes>
+  Lets analyse this component tree together: Good: - Components split up
+  logically with all the props getting passed down explicitly - Can trace the
+  flow of data for debugging - This is the accepted react way of doing things in
+  most cases Bad: - Intermediary components have to act as prop messengers -
+  Refactoring is hard when nesting gets too deep
+</Notes>
+
+---
+
+Problem
+
+- Intermediary components have to act as prop messengers
+- Refactoring is hard when nesting gets too deep
+
+Kent Dodds calls this "Prop drilling"
+
+---
+
+Solution ? (thinking emoji)
+
+---
+
+Component composition to the rescue !
+
+<Notes> (if you all thought i was gonna say context, hold your horses) </Notes>
+
+---
+
+# Component Composition
+
+```jsx
+function Page(props) {
+  const user = props.user;
+  const userLink = (
+    <Link href={user.permalink}>
+      <Avatar user={user} size={props.avatarSize} />
+    </Link>
+  );
+  return <PageLayout userLink={userLink} />;
+}
+// Now we have
+<Page user={user} avatarSize={avatarSize} />
+// ... which renders ...
+<PageLayout userLink={...} />
+// ... which renders ...
+<NavigationBar userLink={...} />
+// ... which renders ...
+{props.userLink}
+```
+
+<Notes>
+  - We are passing the whole component down as prop here. - Refactoring the
+  nested component is easy now because we just make changes at the parent level.
+  Don't have to worry about changing the props in all the components But,
+  downside is that it increases the complexity of the parent component.
+</Notes>
+
+---
+
+# Multiple Children - Slots
+
+```jsx
+function Page(props) {
+  const user = props.user;
+  const content = <Feed user={user} />;
+  const topBar = (
+    <NavigationBar>
+      <Link href={user.permalink}>
+        <Avatar user={user} size={props.avatarSize} />
+      </Link>
+    </NavigationBar>
+  );
+  return <PageLayout topBar={topBar} content={content} />;
+}
+```
+
+---
+
+At this point you must be thinking "umm.. I was told this is a talk on react
+Context" :)
+Some cute emoji
+
+<Notes>
+  Well, We may have solved the prop drilling problem for this particular
+  subtree. But what if we need to share data between different parts of
+  component tree with different nesting levels? Broadcast data?
+</Notes>
+
+---
+
+Context API
+
+<Notes>What is Context API?</Notes>
+
+---
+
+# What is Context API?
+
+<blockquote>
+  Context provides a way to pass props down a component subtree without
+  (explicitly)passing props down
+</blockquote>
+
+<Notes>
+  Values like currentUser, theme, locale etc are required by multiple components
+  throughout the app and context provides a way to share values like these
+  between different components without having to explicitly pass down props
+</Notes>
+
+---
+
+Evolution of Context Api
+
+```
+Legacy API            ->   New stable API(16.3)   ->   Hooks(16.8)
+(static contextTypes)      (Provider, Consumer)        (Provider, useContext)
+```
+
+---
+
+Context - Class Component Syntax
+
+---
+
+Context - Functional Component Syntax
+
+---
+
+Caveat - Performance Issue with value
+
+```jsx
+<Provider value={{ something: 'something' }}>
+  <Toolbar />
+</Provider>
+```
+
+<Notes>Unnecessary rerender </Notes>
+
+---
+
+Solution without hooks
+
+this.state
+
+---
+
+Solution using hooks
+
+useMemo
+
+---
+
+Custom Provider/Consumer
+
+```jsx
+<Header>
+    <UserProfile>
+        <Avatar>
+```
+
+Avatar has access to currentUser just because its a child of UserProfile
+I like to call it perks of having a "rich parent"
+
+```jsx
+<Header>
+    <UserProfile>
+        <div>
+            <div>
+                <Avatar>
+```
+
+(or rich ancestor)
+
+---
+
+When you are passing props to a deeply nested component tree
+So context is also useful when you dont know how many components are going to be between the parent and a child
+
+---
+
+Should I use context ?
+If you are using redux or react router - You are using Context
+
+---
+
+Context vs Redux: The burning question
+
+Self introspection time:
+Why do I use redux in my app?
+ReactRedux has connect() -> solves prop drilling
+time-travel debugging
+Middleware
+For Redux Devtools
+List goes on
+
+---
+
+If your answer was connect(), then absolutely Context replaces redux.
+But if you want any of the other features, then no
+Refer Mark Erikson's blog for details
+
+---
+
+Summary:
+When to reach for what solution: Composition vs Context
+Weigh the pros and cons for everything - not just while selecting libraries/tools. We need to make decisions about patterns and APIs as well and choose the best fit
+Choosing a library or framework is just one part of the process
+Ultimately your app performance, code quality, maintainability etc will depend on the coding standards, patterns and API you decide to use along the way
+Cliche Toolkit example - pick the right one for the job
+How to decide what is right tool?
+Discovery
+Interact with other developers in the community(twitter, reddit etc)
+Read OSS code
+Do a POC, ask for feedback from your team and the community
+Development
+Write tests, run benchmarks and write refactorable flexible code wherever possible
+
+---
+
+Thank you
+@imAnushree
+
+Feedback Link
+
+---
+
+References
+
+https://kentcdodds.com/blog/prop-drilling
+
+https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
