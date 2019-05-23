@@ -1,12 +1,10 @@
 import { Notes } from 'mdx-deck';
 
-# Let's get some Context
+# :fire: Let's get some Context :fire:
 
 Anushree Subramani
-@imAnushree
 
-Footer in all slides
-JSMonthly May 2019 @imAnushree
+@imAnushree
 
 ---
 
@@ -40,26 +38,27 @@ Consider this:
 
 ---
 
-Problem
+### Problems :cold_sweat:
 
 - Intermediary components have to act as prop messengers
 - Refactoring is hard when nesting gets too deep
 
-Kent Dodds calls this "Prop drilling"
+Commonly referred as "Prop drilling"
+(Shout out to Kent Dodds :tada:)
 
 ---
 
-Solution ? (thinking emoji)
+## Solution ? :thinking:
 
 ---
 
-Component composition to the rescue !
+## Component composition to the rescue !
 
 <Notes> (if you all thought i was gonna say context, hold your horses) </Notes>
 
 ---
 
-# Component Composition
+### Component Composition
 
 ```jsx
 function Page(props) {
@@ -115,8 +114,8 @@ Some cute emoji
 
 <Notes>
   Well, We may have solved the prop drilling problem for this particular
-  subtree. But what if we need to share data between different parts of
-  component tree with different nesting levels? Broadcast data?
+  subtree(local data). But what if we need to share data between different parts
+  of component tree with different nesting levels? Broadcast data?
 </Notes>
 
 ---
@@ -130,9 +129,10 @@ Context API
 # What is Context API?
 
 <blockquote>
-  Context provides a way to pass props down a component subtree without
-  (explicitly)passing props down
+  Context provides a way to pass "global" data down a component subtree without
+  (explicitly)passing props down 
 </blockquote>
+Ex: currentUser, theme, locale etc
 
 <Notes>
   Values like currentUser, theme, locale etc are required by multiple components
@@ -142,81 +142,140 @@ Context API
 
 ---
 
-Evolution of Context Api
+# Evolution of Context API
 
 ```
-Legacy API            ->   New stable API(16.3)   ->   Hooks(16.8)
-(static contextTypes)      (Provider, Consumer)        (Provider, useContext)
+Legacy API  ->  New stable API(16.3) -> React 16.6  -> Hooks(16.8)
+                (Provider, Consumer)    (contextType)  (useContext)
+
 ```
 
 ---
 
-Context - Class Component Syntax
+# Syntax of Context API
 
----
-
-Context - Functional Component Syntax
-
----
-
-Caveat - Performance Issue with value
+createContext
 
 ```jsx
-<Provider value={{ something: 'something' }}>
+export const ThemeContext = React.createContext({ theme: 'dark' });
+```
+
+Provider
+
+```jsx
+<ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+```
+
+Consumer
+contextType(class component)
+
+```jsx
+class Layout extends React.Component {
+  static contextType = ThemeContext;
+  render() {
+    let value = this.context;
+    /* render something based on the value of ThemeContext */
+  }
+}
+```
+
+useContext(functional component)
+
+```jsx
+function ThemeButton() {
+  const context = React.useContext(ThemeContext);
+  const { theme, toggleTheme } = context;
+  return (...);
+}
+```
+
+Example:
+
+theme-context.js
+
+```jsx
+export const ThemeContext = React.createContext({
+  theme: themes.dark,
+  toggleTheme: () => {}
+});
+```
+
+app.js
+
+```jsx
+import React from 'react';
+import { ThemeContext } from './theme-context.js';
+import { themes } from './themes.js';
+
+class App extends React.Component {
+  toggleTheme = () => { ... }
+
+  render() {
+    const value = React.useMemo(() => {
+    return {
+      theme: themes.light,
+      toggleTheme: this.toggleTheme
+    }
+  }, [theme])
+    return (
+      <ThemeContext.Provider
+        value={value}
+      >
+        <Content />
+      </ThemeContext.Provider>
+    );
+  }
+}
+```
+
+content.js
+
+```jsx
+import React from 'react';
+import {ThemeButton} from './theme-button.js';
+function Content() {
+  return(
+    <div><ThemeButton></div>
+  )
+}
+```
+
+theme-button.js
+
+```jsx
+import React from 'react';
+import { ThemeContext } from './theme-context.js';
+
+function ThemeButton() {
+  const context = React.useContext(ThemeContext);
+  const { theme, toggleTheme } = context;
+  return (
+    <button onClick={toggleTheme} style={{ backgroundColor: theme.background }}>
+      Toggle Theme
+    </button>
+  );
+}
+```
+
+---
+
+## Caveat - Performance Issue with value
+
+```jsx
+<Context.Provider value={{ something: 'something' }}>
   <Toolbar />
-</Provider>
+</Context.Provider>
 ```
 
 <Notes>Unnecessary rerender </Notes>
 
 ---
 
-Solution without hooks
-
-this.state
+Prop drilling problem solved by Context ! Yaayyy! :tada:
 
 ---
 
-Solution using hooks
-
-useMemo
-
----
-
-Custom Provider/Consumer
-
-```jsx
-<Header>
-    <UserProfile>
-        <Avatar>
-```
-
-Avatar has access to currentUser just because its a child of UserProfile
-I like to call it perks of having a "rich parent"
-
-```jsx
-<Header>
-    <UserProfile>
-        <div>
-            <div>
-                <Avatar>
-```
-
-(or rich ancestor)
-
----
-
-When you are passing props to a deeply nested component tree
-So context is also useful when you dont know how many components are going to be between the parent and a child
-
----
-
-Should I use context ?
-If you are using redux or react router - You are using Context
-
----
-
-Context vs Redux: The burning question
+## Does Context replace redux: The burning question
 
 Self introspection time:
 Why do I use redux in my app?
@@ -253,12 +312,17 @@ Write tests, run benchmarks and write refactorable flexible code wherever possib
 Thank you
 @imAnushree
 
+TODO:
 Feedback Link
+Footer in all slides with ref links
+JSMonthly May 2019 @imAnushree
+Add more ref links
 
 ---
 
 References
 
+https://www.youtube.com/watch?v=PaE-TfTY8TY
 https://kentcdodds.com/blog/prop-drilling
 
 https://blog.isquaredsoftware.com/2018/03/redux-not-dead-yet/
